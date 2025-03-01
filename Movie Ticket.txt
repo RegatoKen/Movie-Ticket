@@ -1,0 +1,87 @@
+class Movie:
+    def __init__(self, title, show_times):
+        self.title = title
+        self.show_times = show_times
+
+class ShowTime:
+    def __init__(self, time, price):
+        self.time = time
+        self.price = price
+
+class Ticket:
+    def __init__(self, movie, show_time, seats):
+        self.movie = movie
+        self.show_time = show_time
+        self.seats = seats
+
+    def calculate_total(self):
+        return len(self.seats) * self.show_time.price
+
+    def apply_discount(self, discount):
+        return self.calculate_total() * (1 - discount)
+
+class RegularTicket(Ticket):
+    def apply_discount(self):
+        return super().apply_discount(0.1)  # 10% discount for regular tickets
+
+class PremiumTicket(Ticket):
+    def apply_discount(self):
+        return super().apply_discount(0.2)  # 20% discount for premium tickets
+
+# Sample data
+movies = [
+    Movie("Movie A", [
+        ShowTime("12:00 PM", 10),
+        ShowTime("3:00 PM", 12)
+    ]),
+    Movie("Movie B", [
+        ShowTime("1:00 PM", 15),
+        ShowTime("4:00 PM", 18)
+    ])
+]
+
+def display_movies():
+    print("Available Movies:")
+    for index, movie in enumerate(movies):
+        print(f"{index + 1}. {movie.title}")
+
+def display_show_times(movie):
+    print(f"Show Times for {movie.title}:")
+    for index, show_time in enumerate(movie.show_times):
+        print(f"{index + 1}. {show_time.time} - ${show_time.price}")
+
+def select_seats():
+    seats = []
+    print("Select seats (1-50). Type 'done' when finished:")
+    while True:
+        seat = input("Enter seat number: ")
+        if seat.lower() == 'done':
+            break
+        if seat.isdigit() and 1 <= int(seat) <= 50:
+            seats.append(int(seat))
+        else:
+            print("Invalid seat number. Please try again.")
+    return seats
+
+def main():
+    display_movies()
+    movie_choice = int(input("Select a movie (1 or 2): ")) - 1
+    selected_movie = movies[movie_choice]
+    
+    display_show_times(selected_movie)
+    show_time_choice = int(input("Select a show time (1 or 2): ")) - 1
+    selected_show_time = selected_movie.show_times[show_time_choice]
+    
+    seats = select_seats()
+    
+    ticket_type = input("Select ticket type (regular/premium): ").strip().lower()
+    if ticket_type == 'premium':
+        ticket = PremiumTicket(selected_movie, selected_show_time, seats)
+    else:
+        ticket = RegularTicket(selected_movie, selected_show_time, seats)
+    
+    total_cost = ticket.apply_discount()
+    print(f"Total cost after discount: ${total_cost:.2f}")
+
+if __name__ == "__main__":
+    main()
